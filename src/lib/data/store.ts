@@ -11,8 +11,7 @@ import { loadLocal, loadMirror, loadOutbox, loadSeed, saveLocal, saveMirror, sav
 export type Role = "donor" | "rider" | "shelter" | "operations" | null;
 export type Connection = "connecting" | "connected" | "unreachable" | "not_configured";
 
-/** Calls that are never queued: they describe the present moment and are useless when replayed later. */
-const NOT_QUEUED = new Set(["heartbeat", "sweep_leases", "simulate_tick"]);
+// Heartbeat, sweep and movement ticks use callRpc directly: they describe the present moment and are never queued.
 
 interface Identity { role: Role; riderId: string | null; donorId: string | null; shelterId: string | null }
 

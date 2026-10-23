@@ -5,7 +5,7 @@ import { act } from "@/lib/actions";
 import { batchForm } from "@/lib/data/schemas";
 import { CATEGORY_LABEL } from "@/lib/engine/labels";
 import { formatMinutes } from "@/lib/engine/time";
-import { Button, Card, Field, Input, Notice, Section, Select, Table, Textarea } from "@/components/ui";
+import { Button, Field, Input, Notice, Section, Select, Table, Textarea } from "@/components/ui";
 import { Empty, PageHead, Pick, Screen, StateBadge, PendingActions, hhmm } from "@/components/shared";
 
 const CATEGORIES = Object.keys(CATEGORY_LABEL);

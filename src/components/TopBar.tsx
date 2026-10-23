@@ -21,6 +21,7 @@ export function TopBar() {
     : connection === "not_configured" ? { t: "Supabase not configured", tone: "critical" as const }
     : { t: "Supabase unreachable", tone: "warn" as const };
   const net = !mounted ? { t: "Checking network", tone: "muted" as const }
+    : online && connection !== "connected" ? { t: "Online. Not synced.", tone: "warn" as const }
     : online ? { t: waiting ? `Online. ${waiting} waiting to sync.` : "Online. Synced.", tone: waiting ? ("warn" as const) : ("calm" as const) }
     : { t: "Offline. Saved on this device.", tone: "critical" as const };
 

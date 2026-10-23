@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { freshDb, rpc, rows } from "./harness";
+import { freshDb, rows } from "./harness";
 describe("migrations", () => {
   it("apply and seed", async () => {
     const db = await freshDb();
