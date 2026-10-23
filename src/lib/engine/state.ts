@@ -40,3 +40,19 @@ export function emptySnapshot(): Snapshot {
     serverNowMs: Date.now(), readAtMs: Date.now(),
   };
 }
+
+/**
+ * While offline there is no heartbeat stream, so staleness cannot be judged from the device clock.
+ * This shifts heartbeat and acknowledgement times forward by the offline duration, which keeps every rider's
+ * connectivity exactly as it was at the last sync instead of letting the whole fleet look disconnected.
+ */
+export function freezeHeartbeats(snap: Snapshot, deviceNow = Date.now()): Snapshot {
+  const delta = Math.max(0, deviceNow - snap.readAtMs);
+  if (delta === 0) return snap;
+  const shift = (iso: string) => new Date(Date.parse(iso) + delta).toISOString();
+  return {
+    ...snap,
+    riders: snap.riders.map((r) => ({ ...r, last_heartbeat_at: shift(r.last_heartbeat_at) })),
+    leases: snap.leases.map((l) => ({ ...l, last_heartbeat_at: shift(l.last_heartbeat_at), ack_deadline: shift(l.ack_deadline) })),
+  };
+}

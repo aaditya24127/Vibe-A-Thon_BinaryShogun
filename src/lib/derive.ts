@@ -134,7 +134,7 @@ export function describeAction(s: Snapshot, b: Batch, assignments: Plan["assignm
   const rider = (id: string) => s.riders.find((r) => r.id === id)?.name ?? id;
   const shelter = (id: string) => s.shelters.find((x) => x.id === id)?.name ?? id;
   const parts = assignments.map((a) => `${rider(a.rider_id)} carries ${a.quantity} ${b.unit} to ${shelter(a.shelter_id)}`);
-  const lead = parts.length ? `Send ${parts.join("; ")}.` : "No rider can take this batch right now.";
+  const lead = parts.length ? `${parts.join("; ")}.` : "No rider can take this batch right now.";
   const rest = unresolved.length ? ` ${unresolved.reduce((n, u) => n + u.quantity, 0)} ${b.unit} stay unresolved: ${unresolved[0].reason}.` : "";
   return lead + rest;
 }
@@ -144,7 +144,10 @@ export function copilotLines(s: Snapshot, item: RescueItem, now: number): string
   const out: string[] = [];
   const b = item.batch;
   out.push(`${b.item_name} has ${formatMinutes(item.remainingSafeMin)} before pickup must happen to stay inside the safe window (expires in ${formatMinutes((Date.parse(b.expires_at) - now) / 60000)}).`);
-  for (const a of item.assignments.slice(0, 2)) {
+  const seen = new Set<string>();
+  for (const a of item.assignments) {
+    if (seen.has(a.shelter_id) || seen.size >= 2) continue;
+    seen.add(a.shelter_id);
     const sh = s.shelters.find((x) => x.id === a.shelter_id)!;
     out.push(`${sh.name} still needs ${sh.unmet_demand - (reservedByShelter(s.allocations).get(sh.id) ?? 0)} units and is reachable with ${Math.round(a.slackMin)} min to spare.`);
   }

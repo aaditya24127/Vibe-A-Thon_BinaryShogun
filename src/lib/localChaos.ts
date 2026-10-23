@@ -83,6 +83,16 @@ function reassign(s: Snapshot, batchId: string, qty: number, excludeRider: strin
   return placed;
 }
 
+/** Reserve a quantity locally using the same arithmetic as claim_lease. Used by tests and local previews. */
+export function assignLocal(s: Snapshot, batchId: string, shelterId: string, riderId: string, qty: number): string {
+  const b = s.batches.find((x) => x.id === batchId)!;
+  const a = assess({ batch: b, donor: s.donors.find((d) => d.id === b.donor_id)!, shelter: s.shelters.find((x) => x.id === shelterId)!, from: s.riders.find((r) => r.id === riderId)!, viaDonor: true, offsetMin: 0, now: nowMs(s), settings: s.settings });
+  const id = newAlloc(s, b, shelterId, riderId, qty, "RESERVED", a, null, 0, "Reserved locally", "claim");
+  b.remaining_qty -= qty;
+  rollup(s, batchId);
+  return id;
+}
+
 export function releaseLocal(s: Snapshot, leaseId: string, reason: string, ghost: boolean) {
   const l = s.leases.find((x) => x.id === leaseId)!;
   const a = s.allocations.find((x) => x.id === l.allocation_id)!;

@@ -54,7 +54,7 @@ export function RescueIQ({ view, now }: { view: Snapshot; now: number }) {
               <h3>{it.batch.id}: {it.batch.item_name}</h3>
               <p className="text-[13px] text-mocha-700">{it.batch.remaining_qty} {it.batch.unit} unallocated. Pickup must start within {formatMinutes(it.remainingSafeMin)}.</p>
             </div>
-            {it.remainingSafeMin < view.settings.at_risk_threshold_min ? <Status tone="critical">Urgent</Status> : <Status tone="warn">At risk</Status>}
+            {it.remainingSafeMin < view.settings.at_risk_threshold_min ? <Status tone="critical">Urgent</Status> : it.unresolved.length ? <Status tone="warn">Quantity unresolved</Status> : <Status tone="warn">At risk</Status>}
           </div>
           <p className="text-[15px]"><span className="font-semibold">Recommended action. </span>{it.action}</p>
           {it.assignments.length > 0 && (

@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { getSupabase } from "../supabase";
 import { REALTIME_TABLES } from "./fetch";
 import { selectView, useApp } from "./store";
 import { nowMs } from "../engine/time";
+import { freezeHeartbeats } from "../engine/state";
 
 export function useMounted() {
   const [m, setM] = useState(false);
@@ -11,7 +12,18 @@ export function useMounted() {
   return m;
 }
 
-export const useView = () => useApp(selectView);
+/** The snapshot screens read. Offline, rider connectivity is held as of the last sync (see freezeHeartbeats). */
+export function useView() {
+  const view = useApp(selectView);
+  const frozen = useApp((s) => !s.online || s.connection === "not_configured" || s.connection === "unreachable");
+  const [bucketN, setBucket] = useState(0);
+  useEffect(() => {
+    if (!frozen) return;
+    const id = setInterval(() => setBucket((n) => n + 1), 5000);
+    return () => clearInterval(id);
+  }, [frozen]);
+  return useMemo(() => (view && frozen ? freezeHeartbeats(view) : view), [view, frozen, bucketN]); // eslint-disable-line react-hooks/exhaustive-deps
+}
 
 /** Simulated server time, advanced by the device clock only between server reads. Re-renders every second. */
 export function useNow(intervalMs = 1000) {

@@ -66,10 +66,11 @@ export const remainingSafeMinutes = (batch: Batch, now: number) => (Date.parse(b
 
 export const minutesUntil = (iso: string, now: number) => (Date.parse(iso) - now) / MIN;
 
-export function formatMinutes(min: number): string {
+export function formatMinutes(minutes: number): string {
+  const min = Math.round(minutes);
   if (min <= 0) return "0 min";
-  if (min < 90) return `${Math.round(min)} min`;
+  if (min < 90) return `${min} min`;
   const h = Math.floor(min / 60);
-  const m = Math.round(min % 60);
+  const m = min % 60;
   return m ? `${h} h ${m} min` : `${h} h`;
 }
