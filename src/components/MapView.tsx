@@ -19,11 +19,11 @@ export function MapView({ view, now, dispatcher = false, height = 460, initialRi
   return (
     <div className="flex flex-col gap-3">
       <OfflineNotice />
-      <div className="flex items-center justify-between gap-2 text-[13px] text-mocha-700">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] text-mocha-700">
         <span>Rider positions are written by the server so every device sees the same map.</span>
         {online && <Button size="sm" onClick={() => setForce((v) => !v)}>{forceSchematic ? "Show street map" : "Show schematic map"}</Button>}
       </div>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
         {schematic ? <SchematicMap view={view} now={now} selected={selected} onSelect={setSelected} /> : <LiveMap view={view} now={now} selected={selected} onSelect={setSelected} height={height} />}
         {selected && <RiderPanel view={view} now={now} riderId={selected} onClose={() => setSelected(null)} dispatcher={dispatcher} />}
       </div>

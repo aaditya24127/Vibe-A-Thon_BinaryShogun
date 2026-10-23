@@ -71,7 +71,7 @@ export default function OperationsPage() {
               {note && <p className="text-[13px]">{note}</p>}
             </Section>
 
-            <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
               <Section title="Live rider map">
                 <MapView view={view} now={now} dispatcher />
               </Section>
@@ -92,7 +92,7 @@ export default function OperationsPage() {
               )}
             </Section>
 
-            <div className="grid gap-8 lg:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2">
               <Section title="Shelter demand and supply">
                 <Table head={["Shelter", "Status", "Unmet demand", "Incoming", "Still open"]}>
                   {view.shelters.map((s) => {
