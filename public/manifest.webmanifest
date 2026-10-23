@@ -1,0 +1,9 @@
+{
+  "name": "WeConnect",
+  "short_name": "WeConnect",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3E3C3",
+  "theme_color": "#4A0F1F",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

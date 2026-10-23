@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* Five colour families. Shades inside a family only. Ratios recorded in PROJECT_CAPSULE.md. */
+@theme {
+  --color-cream: #f3e3c3;        /* Vanilla Cream: page background */
+  --color-latte: #fff8e7;        /* Cosmic Latte: cards, panels, inputs */
+  --color-mocha-200: #d9c3a5;    /* Mocha Cream: decorative dividers, chip fills */
+  --color-mocha-600: #7a6244;    /* Mocha Cream, dark shade: borders that need 3:1 */
+  --color-mocha-700: #6b5238;    /* Mocha Cream, dark shade: muted text */
+  --color-burgundy: #4a0f1f;     /* Deep Burgundy: text, primary buttons */
+  --color-cherry: #8e1b2e;       /* Cherry Cola: urgent states, focus rings */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 20px;
+  --radius-control: 6px;
+  --radius-card: 10px;
+}
+
+html { background: var(--color-cream); }
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-burgundy);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  font-weight: 400;
+}
+h1, h2, h3 { font-weight: 600; margin: 0; }
+h1 { font-size: var(--text-lg); }
+h2 { font-size: var(--text-base); }
+h3 { font-size: var(--text-sm); }
+
+:focus-visible { outline: 2px solid var(--color-cherry); outline-offset: 2px; }
+
+@keyframes fade { from { opacity: 0.4; } to { opacity: 1; } }
+.fade { animation: fade 150ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .fade { animation: none; } }
+
+/* Map tiles pulled into the cream/mocha range. */
+.leaflet-tile-pane { filter: grayscale(1) sepia(0.55) contrast(0.9) brightness(1.05); }
+.leaflet-container { background: var(--color-latte); font-family: var(--font-sans); }
+.leaflet-control-attribution { background: var(--color-latte) !important; color: var(--color-mocha-700) !important; }
