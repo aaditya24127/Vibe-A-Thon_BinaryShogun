@@ -1,7 +1,8 @@
 "use client";
 import L from "leaflet";
 import { useMemo } from "react";
-import { MapContainer, Marker, Polyline, TileLayer, Tooltip } from "react-leaflet";
+import { MapContainer, Marker, Polyline, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
+import { SimLayer } from "./SimLayer";
 import type { Snapshot } from "@/lib/types";
 import { mapData } from "./mapData";
 
@@ -28,12 +29,16 @@ function riderIcon(tone: string, id: string, label: string) {
   });
 }
 
-export default function LiveMap({ view, now, selected, onSelect, height = 460 }: { view: Snapshot; now: number; selected: string | null; onSelect: (id: string) => void; height?: number }) {
+function ClickCatcher({ onClick }: { onClick: () => void }) { useMapEvents({ click: onClick }); return null; }
+
+export default function LiveMap({ view, now, selected, onSelect, height = 460, onMapClick }: { view: Snapshot; now: number; selected: string | null; onSelect: (id: string) => void; height?: number | string; onMapClick?: () => void }) {
   const { riders, routes } = useMemo(() => mapData(view, now), [view, now]);
   const center: [number, number] = [18.52, 73.855];
   return (
     <MapContainer center={center} zoom={12} style={{ height, width: "100%", borderRadius: 10, border: `1px solid ${C.mochaDark}` }} scrollWheelZoom={false}>
       <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {onMapClick && <ClickCatcher onClick={onMapClick} />}
+      <SimLayer />
       {routes.map((r) => (
         <Polyline key={r.leaseId} positions={r.points} pathOptions={{ color: C.burgundy, weight: selected === r.riderId ? 4 : 2, dashArray: r.pickupDone ? undefined : "6 6" }} />
       ))}

@@ -6,6 +6,7 @@ import { getSupabase, isSupabaseConfigured } from "../supabase";
 import type { RpcResult, Snapshot } from "../types";
 import { buildSeedSnapshot } from "../seedSnapshot";
 import { fetchSnapshot } from "./fetch";
+import { notify } from "../toast";
 import { loadLocal, loadMirror, loadOutbox, loadSeed, saveLocal, saveMirror, saveOutbox, saveSeed, type OutboxRecord } from "./mirror";
 
 export type Role = "donor" | "rider" | "shelter" | "operations" | null;
@@ -120,6 +121,7 @@ export const useApp = create<AppState>()(
       async dispatch(type, payload, label) {
         const rec: OutboxRecord = { action_id: nanoid(), type, payload, created_at: new Date().toISOString(), attempts: 0, status: "local", label };
         if (!isSupabaseConfigured) {
+          notify("error", `${label} not sent`, "Supabase is not configured for this deployment.");
           return { ...rec, status: "rejected", reason: "Supabase is not configured for this deployment, so nothing can be saved to the server." };
         }
         // Safety-critical actions go to the outbox first; the server confirms or rejects them.
@@ -127,6 +129,7 @@ export const useApp = create<AppState>()(
         set({ outbox });
         await saveOutbox(outbox);
         if (get().online) await get().flushOutbox();
+        else notify("info", `${label} saved on this device`, "It will be sent in order when the connection returns. Not confirmed yet.");
         return get().outbox.find((o) => o.action_id === rec.action_id) ?? rec;
       },
 
@@ -144,11 +147,13 @@ export const useApp = create<AppState>()(
             await update(rec.action_id, { status: "sent", attempts: rec.attempts + 1 });
             const { data, error } = await sb.rpc(rec.type, { p_action_id: rec.action_id, ...rec.payload });
             if (error && isNetworkError(error)) { await update(rec.action_id, { status: "local" }); break; }
-            if (error) { await update(rec.action_id, { status: "rejected", reason: error.message }); continue; }
+            if (error) { await update(rec.action_id, { status: "rejected", reason: error.message }); notify("error", `${rec.label} failed`, error.message); continue; }
             const res = data as RpcResult;
             await update(rec.action_id, res.success
               ? { status: "confirmed", result: res as Record<string, unknown>, reason: res.reason }
               : { status: "rejected", reason: res.reason, result: res as Record<string, unknown> });
+            if (res.success) notify("success", rec.label, res.reason);
+            else notify("error", `${rec.label} was rejected`, res.reason);
           }
           const keep = get().outbox.filter((o) => o.status === "local" || o.status === "sent" || o.status === "rejected").concat(
             get().outbox.filter((o) => o.status === "confirmed").slice(-30),

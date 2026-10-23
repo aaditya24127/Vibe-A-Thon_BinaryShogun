@@ -31,25 +31,8 @@ export function Screen({ children }: { children: (s: Snapshot, now: number) => R
   return <>{children(view, now)}</>;
 }
 
-export function PendingActions({ filter, title = "Actions on this device" }: { filter?: (o: OutboxRecord) => boolean; title?: string }) {
-  const outbox = useApp((s) => s.outbox);
-  const list = outbox.filter(filter ?? (() => true)).slice(-6).reverse();
-  if (!list.length) return null;
-  return (
-    <div className="flex flex-col gap-2">
-      <h3>{title}</h3>
-      <ul className="flex flex-col gap-2">
-        {list.map((o) => (
-          <li key={o.action_id} className="flex flex-wrap items-center gap-2 text-[13px]">
-            <span>{o.label}</span>
-            <SyncBadge rec={o} />
-            {o.status === "confirmed" && o.reason && <span className="text-mocha-700">{o.reason}</span>}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+/** Retired: outcomes now arrive as toasts and in the notification bell. Kept so call sites compile. */
+export function PendingActions(_props: { filter?: (o: OutboxRecord) => boolean; title?: string }) { return null; }
 
 export function OfflineNotice({ children }: { children?: ReactNode }) {
   const online = useApp((s) => s.online);

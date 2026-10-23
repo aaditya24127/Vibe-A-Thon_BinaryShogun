@@ -1,27 +1,36 @@
+"use client";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Bike, Gift, Home, LayoutDashboard, Loader2 } from "lucide-react";
 
-const ENTRIES = [
-  { href: "/donor", title: "Donor", text: "Post a batch of surplus food, medical supplies or kits." },
-  { href: "/rider", title: "Rider", text: "See reachable batches, claim one, and report each step." },
-  { href: "/shelter", title: "Shelter", text: "Set demand, resources and open status. See incoming deliveries." },
-  { href: "/operations", title: "Operations", text: "Dispatch, map, risk, recovery and the Chaos Lab." },
+const ROLES = [
+  { href: "/donor", title: "Donor", text: "Post surplus batches and follow them to delivery.", icon: Gift },
+  { href: "/rider", title: "Rider", text: "Claim kits, follow the map, report issues.", icon: Bike },
+  { href: "/shelter", title: "Shelter Operations", text: "Track demand, incoming supplies and receipt.", icon: Home },
+  { href: "/operations", title: "Operations", text: "Allocate, reroute and respond to alerts.", icon: LayoutDashboard },
 ];
 
 export default function Landing() {
+  const [going, setGoing] = useState(false);
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6 py-6">
-      <h1>WeConnect</h1>
-      <p className="text-mocha-700">Choose your role.</p>
-      <ul className="flex flex-col divide-y divide-mocha-600 border-y border-mocha-600">
-        {ENTRIES.map((e) => (
-          <li key={e.href}>
-            <Link href={e.href} className="group flex items-center justify-between gap-4 py-4 hover:bg-latte focus-visible:outline-2 focus-visible:outline-cherry">
-              <span className="flex flex-col">
-                <span className="text-[20px] font-semibold">{e.title}</span>
-                <span className="text-[13px] text-mocha-700">{e.text}</span>
-              </span>
-              <ArrowRight aria-hidden size={20} />
+    <div className="mx-auto flex min-h-screen max-w-5xl flex-col justify-center gap-8 px-4 py-10">
+      <div className="flex flex-col gap-4">
+        <span className="grid size-10 place-items-center rounded-[10px] bg-burgundy font-semibold text-latte" aria-hidden>W</span>
+        <h1 className="text-[32px] leading-tight">WeConnect</h1>
+        <p className="max-w-xl text-[20px] font-semibold">Connecting surplus to need, before it spoils.</p>
+        <p className="max-w-xl text-mocha-700">One shared system for donors, riders, shelters and operations: capacity, deadlines and compatibility checked by the database, failures reported with a reason.</p>
+        <div>
+          <Link href="/operations" onClick={() => setGoing(true)} aria-busy={going}
+            className="inline-flex h-11 items-center gap-2 rounded-[6px] border border-burgundy bg-burgundy px-5 font-semibold text-latte transition-colors hover:bg-[#3a0b18] focus-visible:outline-2 focus-visible:outline-cherry focus-visible:outline-offset-2">
+            {going ? <><Loader2 size={18} className="animate-spin" aria-hidden />Opening WeConnect</> : <>Start<ArrowRight size={18} aria-hidden /></>}
+          </Link>
+        </div>
+      </div>
+      <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
+        {ROLES.map(({ href, title, text, icon: Icon }) => (
+          <li key={href}>
+            <Link href={href} className="flex h-full flex-col gap-2 rounded-[10px] border border-mocha-600 bg-latte p-4 shadow-[0_2px_8px_rgba(74,15,31,0.08)] transition-colors hover:bg-mocha-200 focus-visible:outline-2 focus-visible:outline-cherry">
+              <Icon size={20} aria-hidden /><span className="font-semibold">{title}</span><span className="text-[13px] text-mocha-700">{text}</span>
             </Link>
           </li>
         ))}
