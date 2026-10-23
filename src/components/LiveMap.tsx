@@ -35,9 +35,15 @@ function FitSim() {
   const map = useMap();
   const donor = useSim((s) => s.donor), shelter = useSim((s) => s.shelter), active = useSim((s) => s.active);
   useEffect(() => {
-    if (active && donor && shelter) map.fitBounds([[donor.lat, donor.lng], [shelter.lat, shelter.lng]], { padding: [60, 60] });
-    setTimeout(() => map.invalidateSize(), 50);
-  }, [active, donor?.id, shelter?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+    const fit = () => {
+      map.invalidateSize();
+      if (active && donor && shelter) map.fitBounds([[donor.lat, donor.lng], [shelter.lat, shelter.lng]], { padding: [70, 70], maxZoom: 14 });
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(map.getContainer());
+    return () => ro.disconnect();
+  }, [map, active, donor?.id, shelter?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   return null;
 }
 
