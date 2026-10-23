@@ -221,6 +221,10 @@ Offline results (separate): production build with the preview server stopped: `/
 - Real GPS via the Geolocation API: optional and secondary; not started.
 - Radix-based shadcn components: replaced with hand-written equivalents to avoid extra dependencies.
 
+## 15a. Live verification (2026-10-23)
+
+Supabase project bkwcilwilcwqnjkpizkh: migrations 0001-0005 applied via the SQL editor. Via the REST API with the publishable key: tables seeded (6 donors, 5 shelters, 6 riders, 8 batches, 4 rules); direct insert denied (42501); `_seed_data` not callable; claim, duplicate action id, verified-incompatible block, delivery refused before transit, pickup, transit, delivery (30 received), shelter closure reroute (40 units split 30/10), reset all behaved as in the tests. Production build against the live project: top bar shows "Supabase connected", rider screen loaded live batches, a claim from the UI created a lease. Database was reset afterwards. Not yet done: Vercel deployment, two-browser realtime check, offline outbox replay against the live database, pg_cron status.
+
 ## 18. Next task
 
-Create the Supabase project, run migrations 0001 to 0005, set the two environment variables locally and on Vercel, then run the browser flows (claim on one browser appearing on another, shelter closure rerouting, offline outbox replay) and record the deployed judge tests 1 to 9 and the offline checklist.
+Deploy to Vercel with the two environment variables, then run the browser flows (claim on one browser appearing on another, shelter closure rerouting, offline outbox replay) and record the deployed judge tests 1 to 9 and the offline checklist.
