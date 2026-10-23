@@ -14,3 +14,9 @@ public/swe-worker-*.js
 
 .vercel
 .env*
+
+# landing/ is a separate Vercel project
+landing/node_modules
+landing/.vercel
+landing/dist
+landing/.output
