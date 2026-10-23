@@ -86,7 +86,7 @@ export function SimStatusCard({ perspective }: { perspective: "donor" | "rider" 
   const text =
     perspective === "donor" ? `Batch SIM-001 from ${sim.donor?.name}: ${idx < 2 ? "waiting for allocation" : idx < 4 ? "allocated, awaiting pickup" : idx < 6 ? "picked up and on its way" : "delivered"}.`
     : perspective === "shelter" ? `${sim.shelter?.name}: incoming 60 meals with ${sim.rider}. ${idx < 6 ? "On the way" : idx === 6 ? "Arrived, awaiting receipt" : "Receipt recorded"}.`
-    : perspective === "rider" ? `${sim.rider} is ${stage.label.toLowerCase()}.`
+    : perspective === "rider" ? `${sim.rider}: ${stage.label.toLowerCase()}.`
     : `${sim.rider} carrying SIM-001 to ${sim.shelter?.name}. ${stage.label}.`;
   return (
     <div role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[10px] border border-dashed border-cherry bg-latte px-3 py-2 text-[13px]">

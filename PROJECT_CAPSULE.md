@@ -246,3 +246,7 @@ Run on https://weconnect-jade.vercel.app against the live database, resetting af
 ## 18. Next task
 
 Cut a real network-off test of the outbox on a phone, add a dispatcher button for process_incident, and enable pg_cron in Supabase if available.
+
+## 15d. Redesign pass (2026-10-23)
+
+Added: collapsible sidebar shell and compact header; landing Start opens /operations; toasts plus notification bell (success only after the server confirms); "Actions on this device" removed; three-panel Rider screen (Claim kits, OpenStreetMap map, Issues) with full-screen overlay (Esc closes); isolated client-side Simulation (src/lib/sim.ts, never calls the backend, labelled SIMULATION, OSRM road route with straight-line fallback, 4 scenarios, pause/resume/step/speed/reset) shown on map, donor, shelter, operations and timeline; visual timeline with module filter, search, date, table view and detail drawer; shelter receipt via confirm_delivery plus demand progress; donor delivery column. No PDF or video feature existed in Operations. Verified on the deployed site: simulation ran to Shelter receipt at 4x, full-screen map opened and closed, sidebar links. Not verified: mobile layout of the new rider tabs, keyboard walk, shelter receipt on a live in-transit lease, simulation state resets on a full page reload (kept across in-app navigation only). Tests: 68 passing including 4 simulation tests.
