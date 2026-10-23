@@ -37,7 +37,7 @@ function FitSim() {
   useEffect(() => {
     const fit = () => {
       map.invalidateSize();
-      if (active && donor && shelter) map.fitBounds([[donor.lat, donor.lng], [shelter.lat, shelter.lng]], { padding: [70, 70], maxZoom: 14 });
+      if (active && donor && shelter) map.fitBounds([[donor.lat, donor.lng], [shelter.lat, shelter.lng]], { paddingTopLeft: [70, 70], paddingBottomRight: [220, 70], maxZoom: 14 });
     };
     fit();
     const ro = new ResizeObserver(fit);
