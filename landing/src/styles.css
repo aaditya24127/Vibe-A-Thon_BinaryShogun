@@ -1,0 +1,174 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * WeConnect design system — cherry-cola & vanilla-cream palette.
+ *
+ * Brand tokens live on :root and are mapped to Tailwind utilities in
+ * @theme inline (e.g. --color-cherry -> bg-cherry, text-cherry).
+ * All colors MUST use hex here (exact brand values) and stay oklch-free.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+
+  /* WeConnect brand tokens */
+  --color-cream: var(--cream);
+  --color-cream-warm: var(--cream-warm);
+  --color-cream-white: var(--cream-white);
+  --color-blush: var(--blush);
+  --color-cherry: var(--cherry);
+  --color-cherry-deep: var(--cherry-deep);
+  --color-burgundy: var(--burgundy);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* WeConnect brand palette */
+  --cream: #fff5ea;
+  --cream-warm: #f8ebdd;
+  --cream-white: #fffcf7;
+  --blush: #f9d9d2;
+  --cherry: #b5122b;
+  --cherry-deep: #650b1b;
+  --burgundy: #390710;
+  --ink: #351018;
+  --ink-soft: #76595a;
+
+  /* Semantic tokens wired to the brand */
+  --background: #fff5ea;
+  --foreground: #351018;
+  --card: #fffcf7;
+  --card-foreground: #351018;
+  --popover: #fffcf7;
+  --popover-foreground: #351018;
+  --primary: #b5122b;
+  --primary-foreground: #fffcf7;
+  --secondary: #f8ebdd;
+  --secondary-foreground: #650b1b;
+  --muted: #f8ebdd;
+  --muted-foreground: #76595a;
+  --accent: #f9d9d2;
+  --accent-foreground: #650b1b;
+  --destructive: #b5122b;
+  --destructive-foreground: #fffcf7;
+  --border: #f0ddc8;
+  --input: #f0ddc8;
+  --ring: #b5122b;
+  --success: #2f7a3d;
+  --success-soft: #e3f2e1;
+  --success: #2f7a3d;
+  --success-soft: #e3f2e1;
+}
+
+.dark {
+  --background: #390710;
+  --foreground: #fff5ea;
+  --card: #650b1b;
+  --card-foreground: #fff5ea;
+  --popover: #650b1b;
+  --popover-foreground: #fff5ea;
+  --primary: #b5122b;
+  --primary-foreground: #fffcf7;
+  --secondary: #650b1b;
+  --secondary-foreground: #fff5ea;
+  --muted: #650b1b;
+  --muted-foreground: #f9d9d2;
+  --accent: #650b1b;
+  --accent-foreground: #fff5ea;
+  --destructive: #b5122b;
+  --destructive-foreground: #fffcf7;
+  --border: #b5122b;
+  --input: #b5122b;
+  --ring: #b5122b;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-cherry);
+    color: var(--color-cream-white);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Floating hero cards drift gently */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-slow {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow {
+    animation: none;
+  }
+}
