@@ -7,7 +7,9 @@ import { reasonForm, shelterDemandForm } from "@/lib/data/schemas";
 import { CATEGORY_LABEL } from "@/lib/engine/labels";
 import { ACTIVE_STATES, reservedByShelter } from "@/lib/engine/state";
 import { Button, Card, Field, Input, Metric, Notice, Section, Select, Table } from "@/components/ui";
-import { Empty, FeasBadge, PageHead, PendingActions, Pick, Screen, StateBadge, hhmm } from "@/components/shared";
+import { Empty, FeasBadge, Pick, Screen, StateBadge, hhmm } from "@/components/shared";
+import { LeaseActions } from "@/components/LeaseActions";
+import { SimStatusCard } from "@/components/SimPanel";
 
 function outcome(rec: OutboxRecord) {
   if (rec.status === "confirmed") return { tone: "calm" as const, text: rec.reason ?? "Saved by the server." };
@@ -58,16 +60,28 @@ export default function ShelterPage() {
 
         return (
           <>
-            <PageHead title="Shelter"><p className="text-[13px] text-mocha-700">Changes here can reroute deliveries that are already on the way.</p></PageHead>
-            <div className="mb-6"><Pick label="Shelter" items={view.shelters} value={shelterId} onChange={(id) => setIdentity({ role: "shelter", shelterId: id })} /></div>
+            <div className="mb-3 flex flex-wrap items-end gap-3"><Pick label="Shelter" items={view.shelters} value={shelterId} onChange={(id) => setIdentity({ role: "shelter", shelterId: id })} /><p className="text-[13px] text-mocha-700">Changes here can reroute deliveries already on the way.</p></div>
+            <SimStatusCard perspective="shelter" />
             {!sh ? <Empty>Choose a shelter to continue.</Empty> : (
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
-                <div className="flex flex-col gap-6">
+              <div className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,22rem)_1fr]">
+                <div className="flex flex-col gap-3">
                   <div className="grid grid-cols-3 gap-3">
                     <Metric label="Status" value={sh.status === "open" ? "Open" : "Closed"} tone={sh.status === "open" ? "calm" : "critical"} />
                     <Metric label="Unmet demand" value={sh.unmet_demand} />
                     <Metric label="Reserved incoming" value={reserved} note={`${Math.max(0, sh.unmet_demand - reserved)} still open`} />
                   </div>
+                  {(() => {
+                    const got = incoming.filter((a) => a.status === "DELIVERED").reduce((n, a) => n + a.quantity, 0);
+                    const need = sh.unmet_demand + got;
+                    const pct = need ? Math.min(100, Math.round((got / need) * 100)) : 0;
+                    return (
+                      <div className="flex flex-col gap-1 text-[13px]">
+                        <div className="flex justify-between"><span>Received {got} of {need} required</span><span>{Math.max(0, need - got)} remaining</span></div>
+                        <div className="h-2 overflow-hidden rounded-[3px] bg-mocha-200" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Demand received"><div className="h-full bg-cherry" style={{ width: `${pct}%` }} /></div>
+                        {sh.unmet_demand > 0 && reserved < sh.unmet_demand && <p className="text-cherry">Shortage: {sh.unmet_demand - reserved} units have no delivery assigned.</p>}
+                      </div>
+                    );
+                  })()}
 
                   <Card>
                     <form onSubmit={demand} className="flex flex-col gap-3" aria-label="Set unmet demand">
@@ -105,12 +119,11 @@ export default function ShelterPage() {
                       {msg.resources && <Notice tone={msg.resources.tone}>{msg.resources.text}</Notice>}
                     </form>
                   </Card>
-                  <PendingActions filter={(o) => o.type.startsWith("set_shelter")} />
                 </div>
 
                 <Section title="Incoming allocations" aside={`${incoming.filter((a) => ACTIVE_STATES.includes(a.status)).length} active`}>
                   {!incoming.length ? <Empty>No deliveries are assigned to this shelter.</Empty> : (
-                    <Table head={["Batch", "Quantity", "Status", "ETA", "Feasibility", "Why it may be at risk"]}>
+                    <Table head={["Batch", "Quantity", "Status", "ETA", "Feasibility", "Why it may be at risk", "Confirm receipt"]}>
                       {incoming.map((a) => {
                         const b = view.batches.find((x) => x.id === a.batch_id);
                         const l = view.leases.find((x) => x.allocation_id === a.id);
@@ -122,6 +135,7 @@ export default function ShelterPage() {
                             <td>{a.status === "DELIVERED" ? "Delivered" : l?.eta_at ? hhmm(l.eta_at) : "Not set"}</td>
                             <td><FeasBadge f={a.feasibility} /></td>
                             <td>{a.blocking_reason ?? (a.status === "UNRESOLVED" ? "No destination found" : "None")}</td>
+                            <td>{l && l.status === "IN_TRANSIT" ? <LeaseActions lease={l} /> : <span className="text-mocha-700">{a.status === "DELIVERED" ? "Received" : "Not arrived"}</span>}</td>
                           </tr>
                         );
                       })}

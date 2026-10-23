@@ -8,7 +8,8 @@ import { CATEGORY_LABEL } from "@/lib/engine/labels";
 import { reservedByShelter } from "@/lib/engine/state";
 import { formatMinutes } from "@/lib/engine/time";
 import { Button, Empty, Metric, Section, Status, Table } from "@/components/ui";
-import { OfflineNotice, PageHead, PendingActions, Screen, StateBadge, FeasBadge, hhmm, hhmmss } from "@/components/shared";
+import { SimStatusCard } from "@/components/SimPanel";
+import { OfflineNotice, Screen, StateBadge, FeasBadge, hhmm, hhmmss } from "@/components/shared";
 import { MapView } from "@/components/MapView";
 import { RescueIQ } from "@/components/RescueIQ";
 import { ChaosLab } from "@/components/ChaosLab";
@@ -28,16 +29,15 @@ export default function OperationsPage() {
         const events = view.events.slice(0, 8);
         const ledger = computeLedger(view);
         return (
-          <div className="flex flex-col gap-10">
-            <PageHead title="Operations" primary={<Link href="/timeline" className="text-[13px] underline underline-offset-4">Open event timeline</Link>}>
-              <p className="text-[13px] text-mocha-700">
-                Last sweep {m.lastSweepMs ? `${hhmmss(m.lastSweepMs)} (${formatMinutes((now - m.lastSweepMs) / 60000)} ago)` : "not yet run"}. Sweeps run every 30 seconds while any device is connected. Server time {hhmmss(now)}.
-              </p>
-            </PageHead>
+          <div className="flex flex-col gap-4">
+            <p className="text-[13px] text-mocha-700">
+              Last sweep {m.lastSweepMs ? `${hhmmss(m.lastSweepMs)} (${formatMinutes((now - m.lastSweepMs) / 60000)} ago)` : "not yet run"}. Sweeps run every 30 seconds while any device is connected. Server time {hhmmss(now)}. <Link href="/timeline" className="underline underline-offset-4">Event timeline</Link>
+            </p>
+            <SimStatusCard perspective="operations" />
             <OfflineNotice />
             {local && <div role="status" className="rounded-[6px] border border-dashed border-cherry px-3 py-2 text-[13px] text-cherry">Showing local results that are not yet synced.</div>}
 
-            <section aria-label="Metrics" className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3 xl:grid-cols-6">
+            <section aria-label="Metrics" className="grid grid-cols-2 gap-x-5 gap-y-3 sm:grid-cols-3 xl:grid-cols-9">
               <Metric label="Active donations" value={m.activeBatches} note={`${m.awaitingQty} units awaiting delivery`} />
               <Metric label="Riders available" value={m.riders.available} />
               <Metric label="Riders assigned" value={m.riders.assigned} />
@@ -71,7 +71,7 @@ export default function OperationsPage() {
               {note && <p className="text-[13px]">{note}</p>}
             </Section>
 
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
               <Section title="Live rider map">
                 <MapView view={view} now={now} dispatcher />
               </Section>
@@ -92,7 +92,7 @@ export default function OperationsPage() {
               )}
             </Section>
 
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
               <Section title="Shelter demand and supply">
                 <Table head={["Shelter", "Status", "Unmet demand", "Incoming", "Still open"]}>
                   {view.shelters.map((s) => {
@@ -126,7 +126,6 @@ export default function OperationsPage() {
             </Section>
 
             <ChaosLab view={view} />
-            <PendingActions title="Operations actions on this device" filter={(o) => !["claim_lease", "confirm_pickup", "mark_in_transit", "confirm_delivery"].includes(o.type)} />
             <p className="text-[13px] text-mocha-700">Times shown in this device's local zone. Deadlines use server time {hhmm(now)}.</p>
           </div>
         );
