@@ -43,3 +43,6 @@ h3 { font-size: var(--text-sm); }
 .leaflet-tile-pane { filter: grayscale(1) sepia(0.55) contrast(0.9) brightness(1.05); }
 .leaflet-container { background: var(--color-latte); font-family: var(--font-sans); }
 .leaflet-control-attribution { background: var(--color-latte) !important; color: var(--color-mocha-700) !important; }
+
+/* Keep Leaflet's internal z-indexes (up to 1000) inside the map so they never overlay app panels. */
+.leaflet-container { isolation: isolate; }

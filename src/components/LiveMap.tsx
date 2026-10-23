@@ -1,8 +1,9 @@
 "use client";
 import L from "leaflet";
-import { useMemo } from "react";
-import { MapContainer, Marker, Polyline, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
+import { useEffect, useMemo } from "react";
+import { MapContainer, Marker, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { SimLayer } from "./SimLayer";
+import { useSim } from "@/lib/sim";
 import type { Snapshot } from "@/lib/types";
 import { mapData } from "./mapData";
 
@@ -29,9 +30,20 @@ function riderIcon(tone: string, id: string, label: string) {
   });
 }
 
+/** Frames the simulated pickup and destination once when a simulation starts. */
+function FitSim() {
+  const map = useMap();
+  const donor = useSim((s) => s.donor), shelter = useSim((s) => s.shelter), active = useSim((s) => s.active);
+  useEffect(() => {
+    if (active && donor && shelter) map.fitBounds([[donor.lat, donor.lng], [shelter.lat, shelter.lng]], { padding: [60, 60] });
+    setTimeout(() => map.invalidateSize(), 50);
+  }, [active, donor?.id, shelter?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
 function ClickCatcher({ onClick }: { onClick: () => void }) { useMapEvents({ click: onClick }); return null; }
 
-export default function LiveMap({ view, now, selected, onSelect, height = 460, onMapClick }: { view: Snapshot; now: number; selected: string | null; onSelect: (id: string) => void; height?: number | string; onMapClick?: () => void }) {
+export default function LiveMap({ view, now, selected, onSelect, height = 460, onMapClick, simOnly = false }: { view: Snapshot; now: number; selected: string | null; onSelect: (id: string) => void; height?: number | string; onMapClick?: () => void; simOnly?: boolean }) {
   const { riders, routes } = useMemo(() => mapData(view, now), [view, now]);
   const center: [number, number] = [18.52, 73.855];
   return (
@@ -39,16 +51,17 @@ export default function LiveMap({ view, now, selected, onSelect, height = 460, o
       <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {onMapClick && <ClickCatcher onClick={onMapClick} />}
       <SimLayer />
-      {routes.map((r) => (
+      {simOnly && <FitSim />}
+      {!simOnly && routes.map((r) => (
         <Polyline key={r.leaseId} positions={r.points} pathOptions={{ color: C.burgundy, weight: selected === r.riderId ? 4 : 2, dashArray: r.pickupDone ? undefined : "6 6" }} />
       ))}
-      {view.donors.map((d) => (
+      {!simOnly && view.donors.map((d) => (
         <Marker key={d.id} position={[d.lat, d.lng]} icon={donorIcon}><Tooltip>{`Donor: ${d.name}`}</Tooltip></Marker>
       ))}
-      {view.shelters.map((s) => (
+      {!simOnly && view.shelters.map((s) => (
         <Marker key={s.id} position={[s.lat, s.lng]} icon={shelterIcon(s.status === "closed")}><Tooltip>{`Shelter: ${s.name} (${s.status})`}</Tooltip></Marker>
       ))}
-      {riders.map((r) => (
+      {!simOnly && riders.map((r) => (
         <Marker key={r.id} position={[r.lat, r.lng]} icon={riderIcon(r.tone, r.id, r.status)} zIndexOffset={selected === r.id ? 1000 : 500}
           eventHandlers={{ click: () => onSelect(r.id) }} keyboard>
           <Tooltip>{`${r.name}: ${r.status}`}</Tooltip>

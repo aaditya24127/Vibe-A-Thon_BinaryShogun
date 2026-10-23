@@ -1,9 +1,13 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { Pause, Play, RotateCcw, SkipForward, FlaskConical } from "lucide-react";
+import { Pause, Play, RotateCcw, SkipForward, FlaskConical, X } from "lucide-react";
 import { SCENARIOS, STAGES, simEtaSeconds, simRouteProgress, useSim, type Scenario } from "@/lib/sim";
 import { useView } from "@/lib/data/hooks";
 import { Button, Select, Status } from "./ui";
+import { useNow } from "@/lib/data/hooks";
+
+const LiveMap = dynamic(() => import("./LiveMap"), { ssr: false, loading: () => <p className="p-4 text-mocha-700">Loading map</p> });
 
 /** Runs the simulation clock for the whole app. Mounted once in the shell. */
 export function SimDriver() {
@@ -22,10 +26,17 @@ export function SimPanel({ onClose }: { onClose: () => void }) {
   const view = useView();
   const [scenario, setScenario] = useState<Scenario>("normal");
   const stageIdx = STAGES.findIndex((s) => s.id === sim.stage);
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [onClose]);
   return (
-    <div role="dialog" aria-label="Simulation controls" className="absolute right-0 top-11 z-40 flex w-[22rem] max-w-[92vw] flex-col gap-3 rounded-[10px] border border-mocha-600 bg-latte p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)]">
+    <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-burgundy/30 p-3" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-label="Simulation" onClick={(e) => e.stopPropagation()} className="grid w-full max-w-6xl grid-cols-[minmax(0,1fr)] gap-3 rounded-[10px] border border-mocha-600 bg-latte p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)] lg:grid-cols-[22rem_minmax(0,1fr)]">
+    <div className="flex min-w-0 flex-col gap-3" aria-label="Simulation controls" role="group">
       <div className="flex items-center justify-between gap-2">
-        <h2>Simulation</h2><Status tone="warn">SIMULATION, not real data</Status>
+        <h2>Simulation</h2><div className="flex items-center gap-2"><Status tone="warn">SIMULATION, not real data</Status><Button size="sm" onClick={onClose} aria-label="Close simulation"><X size={14} aria-hidden />Close</Button></div>
       </div>
       <p className="text-[13px] text-mocha-700">Runs in this browser only. It never moves a real rider or changes a real delivery.</p>
       {!sim.active ? (
@@ -61,6 +72,22 @@ export function SimPanel({ onClose }: { onClose: () => void }) {
         </>
       )}
     </div>
+    <SimMapPanel />
+    </div>
+    </div>
+  );
+}
+
+/** Dedicated map panel. The map is isolated so its internal layers can never stack above the controls. */
+function SimMapPanel() {
+  const view = useView();
+  const now = useNow();
+  const active = useSim((s) => s.active);
+  return (
+    <section aria-label="Simulation map" className="relative isolate min-h-[22rem] overflow-hidden rounded-[10px] border border-mocha-600 bg-cream lg:min-h-[32rem]">
+      {!active && <p className="absolute inset-0 z-10 grid place-items-center bg-latte/90 p-4 text-center text-[13px] text-mocha-700">Start the simulation to see the simulated rider, pickup and destination on the map.</p>}
+      {view && <LiveMap view={view} now={now} selected={null} onSelect={() => undefined} height="100%" simOnly />}
+    </section>
   );
 }
 
