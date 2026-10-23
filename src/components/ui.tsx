@@ -70,7 +70,7 @@ const toneClass: Record<Tone, string> = {
 };
 export function Status({ tone, children, className }: { tone: Tone; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("fade inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[13px] font-semibold whitespace-nowrap", toneClass[tone], className)}>
+    <span className={cn("fade inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[13px] font-semibold max-w-full break-words", toneClass[tone], className)}>
       {children}
     </span>
   );

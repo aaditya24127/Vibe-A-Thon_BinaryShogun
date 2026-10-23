@@ -229,6 +229,20 @@ Supabase project bkwcilwilcwqnjkpizkh: migrations 0001-0005 applied via the SQL 
 
 Vercel project weconnect (account aaditya24127-5445), production deployment from the CLI, public alias https://weconnect-jade.vercel.app (other aliases sit behind Vercel SSO protection). Env vars set in Vercel for production. Results on the deployed site: top bar "Supabase connected, Online. Synced."; service worker activated; a claim made from outside the browser appeared on Operations within 4 s without a reload (realtime); Chaos Lab "close shelter" rerouted 30 units to another shelter with the six-part result confirmed by the server; "make rider unresponsive" then "advance clock 5 min" released the uncollected lease and reassigned it to another rider (judge test 3, uncollected case); reset restored the seed. Judge tests 1, 2, 4, 6, 7, 9 on the deployed site, the custody-uncertain case, and the offline outbox replay on the deployed site are still unrun (covered only by the automated tests in section 15).
 
+## 15c. Deployed judge tests, offline replay, polish (2026-10-23)
+
+Run on https://weconnect-jade.vercel.app against the live database, resetting afterwards:
+- 1 Expiring: Chaos Lab batch (60 units, 30 min) shown Urgent in RescueIQ, 40 units allocated at risk, 20 unresolved with "Too far for the safe window"; Apply recommendation created the lease. PASS.
+- 2 Splitting: 5 claims (155 units) within rider capacity and shelter demand; the next claim rejected "Exceeds rider capacity". PASS.
+- 3 Ghost: uncollected lease released and reassigned (15b). Collected lease: sweep gave CUSTODY_UNCERTAIN, batch pool unchanged (140), dispatcher resolve_custody resumed to IN_TRANSIT. PASS.
+- 4 Demand fulfilled in transit: set to 0 with two live leases, both fully rerouted (30 and 40 units), nothing unresolved. PASS.
+- 5 Closure: see 15b. PASS.
+- 6 Verified block on ration kit at a shelter without fuel; unverified medical at a shelter without cold storage allowed and flagged at risk. PASS.
+- 7 Delay of 25 min updated ETA and feasibility (slack 97.7 min, feasible). The infeasible-reroute case is covered by the database tests only.
+- 9 Delivery refused before transit and with quantity 0; 18 of 20 received recorded as delivered 18 plus 2 unresolved shortfall. PASS.
+- 8 Offline replay: the app was put in offline mode by dispatching the browser offline event (the network was not physically cut). A claim showed "Saved on this device, will sync", then on the online event replayed to "Confirmed by server"; a second queued claim was rejected by the database with "Exceeds rider capacity" and kept visible. Earlier, the production build opened from cache with the server stopped. Schematic map interaction not exercised.
+- Polish: 768 px has no horizontal overflow and RescueIQ and Chaos Lab are present; all 13 form fields on Operations are labelled; 375 px overflow on Operations and Rider was found and fixed (grid min-width, wrapping status chips). Keyboard: focus ring rule is in CSS, all controls are native elements; a real Tab-key walk was not performed because scripted focus does not trigger focus-visible.
+
 ## 18. Next task
 
-Run the remaining deployed judge tests (1, 2, 4, 6, 7, 9, custody uncertain) and the offline outbox replay on https://weconnect-jade.vercel.app, then the 768 px and keyboard polish pass.
+Cut a real network-off test of the outbox on a phone, add a dispatcher button for process_incident, and enable pg_cron in Supabase if available.
