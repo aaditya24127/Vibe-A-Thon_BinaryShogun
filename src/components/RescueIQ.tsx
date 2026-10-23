@@ -5,7 +5,7 @@ import type { OutboxRecord } from "@/lib/data/mirror";
 import { computeRescue, copilotLines } from "@/lib/derive";
 import { formatMinutes } from "@/lib/engine/time";
 import type { Snapshot } from "@/lib/types";
-import { Button, Card, Empty, Notice, Status, Table } from "./ui";
+import { Button, Card, Empty, Notice, Status } from "./ui";
 import { FeasBadge, hhmm } from "./shared";
 
 type Result = { success: boolean; reason: string; batch_id?: string };
@@ -47,8 +47,8 @@ export function RescueIQ({ view, now }: { view: Snapshot; now: number }) {
       </div>
       {results.all && <Notice tone={results.all.tone}>{results.all.lines.join(" ")}</Notice>}
       <p className="text-[13px] text-mocha-700">Recommendations are calculated from live data. Nothing changes until you apply one, and the database re-checks every assignment.</p>
-      {!items.length ? <Empty>No batch is at risk. Every offered batch has a feasible allocation with time to spare.</Empty> : items.map((it) => (
-        <Card key={it.batch.id} className="flex flex-col gap-3">
+      {!items.length ? <Empty>No batch is at risk. Every offered batch has a feasible allocation with time to spare.</Empty> : <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(100%,23rem),1fr))]">{items.map((it) => (
+        <Card key={it.batch.id} className="flex min-w-0 flex-col gap-3">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <h3>{it.batch.id}: {it.batch.item_name}</h3>
@@ -58,15 +58,18 @@ export function RescueIQ({ view, now }: { view: Snapshot; now: number }) {
           </div>
           <p className="text-[15px]"><span className="font-semibold">Recommended action. </span>{it.action}</p>
           {it.assignments.length > 0 && (
-            <Table head={["Rider", "Shelter", "Quantity", "ETA", "Feasibility", "Checks passed"]}>
+            <ul className="m-0 flex list-none flex-col gap-2 p-0">
               {it.assignments.map((a, i) => (
-                <tr key={i}>
-                  <td>{name(a.rider_id)}</td><td>{shelter(a.shelter_id)}</td><td>{a.quantity}</td><td>{hhmm(a.etaMs)}</td>
-                  <td><FeasBadge f={a.feasibility} /></td>
-                  <td><ul className="m-0 list-none p-0">{a.checks.map((c) => <li key={c}>{c}</li>)}</ul></td>
-                </tr>
+                <li key={i} className="min-w-0 rounded-[6px] border border-mocha-600/60 bg-cream/60 p-2 text-[13px]">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                    <span className="min-w-0 break-words font-semibold">{name(a.rider_id)} to {shelter(a.shelter_id)}</span>
+                    <FeasBadge f={a.feasibility} />
+                  </div>
+                  <p className="text-mocha-700">{a.quantity} {it.batch.unit}. ETA {hhmm(a.etaMs)}.</p>
+                  <ul className="m-0 mt-1 list-disc pl-4 text-mocha-700">{a.checks.map((c) => <li key={c} className="break-words">{c}</li>)}</ul>
+                </li>
               ))}
-            </Table>
+            </ul>
           )}
           {it.unresolved.map((u) => <Notice key={u.reason} tone="critical">{`${u.quantity} ${it.batch.unit} unresolved. ${u.reason}.`}</Notice>)}
           <ul className="m-0 list-disc pl-5 text-[13px] text-mocha-700">{copilotLines(view, it, now).map((l) => <li key={l}>{l}</li>)}</ul>
@@ -75,7 +78,7 @@ export function RescueIQ({ view, now }: { view: Snapshot; now: number }) {
             {results[it.batch.id] && <Notice tone={results[it.batch.id].tone}>{results[it.batch.id].lines.join(" ")}</Notice>}
           </div>
         </Card>
-      ))}
+      ))}</div>}
     </section>
   );
 }

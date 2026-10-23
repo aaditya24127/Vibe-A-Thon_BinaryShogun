@@ -80,7 +80,7 @@ export default function TimelinePage() {
                 {rows.slice(0, 200).map((i) => (
                   <li key={i.key} className="relative">
                     <span aria-hidden className={cn("absolute -left-[18px] top-3 size-3 rounded-full border-2 border-burgundy", i.simulated ? "bg-latte" : "bg-cherry")} />
-                    <button onClick={() => setOpen(i)} className="flex w-full flex-col gap-0.5 rounded-[10px] border border-mocha-600 bg-latte px-3 py-2 text-left text-[13px] transition-colors hover:bg-mocha-200 focus-visible:outline-2 focus-visible:outline-cherry">
+                    <button onClick={() => setOpen(i)} className="flex w-full flex-col gap-0.5 wc-card px-3 py-2 text-left text-[13px] transition-colors hover:bg-mocha-200 focus-visible:outline-2 focus-visible:outline-cherry">
                       <span className="flex flex-wrap items-center gap-2"><span className="font-semibold text-[15px]">{i.title}</span><Status tone="active">{i.source}</Status>{i.simulated && <Status tone="warn">SIMULATION</Status>}<span className="ml-auto text-mocha-700">{format(i.at, "dd MMM HH:mm:ss")}</span></span>
                       <span>{i.description}</span>
                       <span className="text-mocha-700">{i.entity}{i.prev || i.next ? `: ${i.prev ?? "none"} to ${i.next ?? "none"}` : ""}</span>

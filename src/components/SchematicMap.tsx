@@ -18,7 +18,7 @@ export function SchematicMap({ view, now, selected, onSelect }: { view: Snapshot
   return (
     <figure className="m-0 flex flex-col gap-2">
       <figcaption className="text-[13px] font-semibold">Schematic map. Street map unavailable offline.</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Schematic map of donors, shelters and riders" className="w-full rounded-[10px] border border-mocha-600 bg-latte">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Schematic map of donors, shelters and riders" className="w-full wc-card">
         {routes.map((r) => (
           <polyline key={r.leaseId} points={r.points.map(([la, ln]) => `${x(ln)},${y(la)}`).join(" ")} fill="none" stroke="#4a0f1f" strokeWidth={selected === r.riderId ? 3 : 1.5} strokeDasharray={r.pickupDone ? undefined : "6 5"} />
         ))}

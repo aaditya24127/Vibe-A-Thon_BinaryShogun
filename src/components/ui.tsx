@@ -46,7 +46,7 @@ export function Field({ label, hint, error, children, htmlFor }: { label: string
 
 /* ---- Card: radius 10px, a single border, no shadow. ---- */
 export function Card({ className, ...p }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-[10px] border border-mocha-600 bg-latte p-4", className)} {...p} />;
+  return <div className={cn("wc-card p-4", className)} {...p} />;
 }
 export function Section({ title, aside, children, className }: { title: string; aside?: ReactNode; children: ReactNode; className?: string }) {
   return (
@@ -98,7 +98,7 @@ export function Empty({ children }: { children: ReactNode }) {
 
 export function Table({ head, children, className }: { head: string[]; children: ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-x-auto rounded-[6px] border border-mocha-600", className)}>
+    <div className={cn("wc-card overflow-x-auto !p-0", className)}>
       <table className="w-full min-w-[560px] border-collapse text-left text-[13px]">
         <thead>
           <tr className="bg-mocha-200">{head.map((h) => <th key={h} scope="col" className="px-3 py-2 font-semibold">{h}</th>)}</tr>

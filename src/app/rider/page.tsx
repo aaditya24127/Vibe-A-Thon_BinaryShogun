@@ -89,7 +89,7 @@ export default function RiderPage() {
         }
 
         const summary = lease && batch && shelter && donor ? (
-          <div className="flex flex-col gap-2 rounded-[10px] border border-mocha-600 bg-latte p-3">
+          <div className="flex flex-col gap-2 wc-card p-3">
             <div className="flex flex-wrap items-center gap-2"><StateBadge state={lease.status} />{alloc && <FeasBadge f={alloc.feasibility} />}
               <span className="font-semibold">{batch.item_name}: {lease.quantity} {batch.unit}</span></div>
             <p className="text-[13px] text-mocha-700">{donor.name} to {shelter.name}. ETA {lease.eta_at ? hhmm(lease.eta_at) : "not set"}. Expires in {formatMinutes((Date.parse(batch.expires_at) - now) / 60000)}. Rider capacity {rider!.capacity_units}.</p>
@@ -101,7 +101,7 @@ export default function RiderPage() {
           <section aria-label="Claim kits" className="flex min-h-0 flex-col gap-2">
             <h2>Claim kits <span className="font-normal text-mocha-700">({options.length})</span></h2>
             {!options.length ? <Empty>Nothing reachable: capacity is full, or every batch is taken or out of range.</Empty> : options.map((o) => (
-              <article key={o.batch.id} className="flex flex-col gap-1.5 rounded-[10px] border border-mocha-600 bg-latte p-2.5 text-[13px] shadow-[0_1px_4px_rgba(74,15,31,0.08)]">
+              <article key={o.batch.id} className="flex flex-col gap-1.5 wc-card p-2.5 text-[13px] ">
                 <div className="flex items-start justify-between gap-2"><h3>{o.batch.item_name}</h3><FeasBadge f={o.feasibility} /></div>
                 <p>{o.quantity} of {o.batch.remaining_qty} {o.batch.unit}. {o.donor.area_name} to {o.shelter.name}.</p>
                 <p className="text-mocha-700">Pickup within {formatMinutes(o.remainingSafeMin)}. ETA {hhmm(o.etaMs)}. {o.batch.handling_notes || "No handling notes"}.</p>
@@ -118,7 +118,7 @@ export default function RiderPage() {
             <h2>Issues <span className="font-normal text-mocha-700">({incidents.length})</span></h2>
             {simActive && <p className="rounded-[6px] border border-dashed border-cherry px-2 py-1 text-[13px]"><Status tone="warn">SIMULATION</Status> Simulated incidents appear in the Timeline, not here.</p>}
             {!incidents.length ? <Empty>No incidents reported by this rider.</Empty> : incidents.map((i) => (
-              <article key={i.id} className="flex flex-col gap-1 rounded-[10px] border border-mocha-600 bg-latte p-2.5 text-[13px]">
+              <article key={i.id} className="flex flex-col gap-1 wc-card p-2.5 text-[13px]">
                 <div className="flex items-center justify-between gap-2"><span className="font-semibold">{INCIDENT_LABEL[i.type]}</span><Status tone={i.sync_status === "processed" ? "calm" : "warn"}>{i.sync_status === "processed" ? "Resolved" : "Open"}</Status></div>
                 <p>{i.note || "No note"}</p>
                 {i.sync_status !== "processed" && <Button size="sm" onClick={() => act.processIncident(i.id)}>Mark resolved</Button>}
@@ -127,7 +127,7 @@ export default function RiderPage() {
             {lease && ["RESERVED", "PICKUP_CONFIRMED", "IN_TRANSIT"].includes(lease.status) && (
               <Button size="sm" onClick={() => act.reroute(lease.id, "Rider requested a reroute")}>Request reroute</Button>
             )}
-            <form onSubmit={report} className="flex flex-col gap-2 rounded-[10px] border border-mocha-600 bg-latte p-2.5" aria-label="Report an issue">
+            <form onSubmit={report} className="flex flex-col gap-2 wc-card p-2.5" aria-label="Report an issue">
               <h3>Report an issue</h3>
               <Field label="Type" htmlFor="inc-type"><Select id="inc-type" name="type" defaultValue="delay">{Object.entries(INCIDENT_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
               <Field label="Minutes lost (delay only)" htmlFor="inc-min" error={incErr}><Input id="inc-min" name="minutes" type="number" min={0} max={240} defaultValue={0} /></Field>

@@ -33,7 +33,7 @@ export function SimPanel({ onClose }: { onClose: () => void }) {
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-burgundy/30 p-3" onClick={onClose}>
-    <div role="dialog" aria-modal="true" aria-label="Simulation" onClick={(e) => e.stopPropagation()} className="grid w-full max-w-6xl grid-cols-[minmax(0,1fr)] gap-3 rounded-[10px] border border-mocha-600 bg-latte p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)] lg:grid-cols-[22rem_minmax(0,1fr)]">
+    <div role="dialog" aria-modal="true" aria-label="Simulation" onClick={(e) => e.stopPropagation()} className="grid w-full max-w-6xl grid-cols-[minmax(0,1fr)] gap-3 wc-card p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)] lg:grid-cols-[22rem_minmax(0,1fr)]">
     <div className="flex min-w-0 flex-col gap-3" aria-label="Simulation controls" role="group">
       <div className="flex items-center justify-between gap-2">
         <h2>Simulation</h2><div className="flex items-center gap-2"><Status tone="warn">SIMULATION, not real data</Status><Button size="sm" onClick={onClose} aria-label="Close simulation"><X size={14} aria-hidden />Close</Button></div>

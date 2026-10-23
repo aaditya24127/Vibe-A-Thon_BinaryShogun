@@ -29,7 +29,7 @@ export default function Landing() {
       <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
         {ROLES.map(({ href, title, text, icon: Icon }) => (
           <li key={href}>
-            <Link href={href} className="flex h-full flex-col gap-2 rounded-[10px] border border-mocha-600 bg-latte p-4 shadow-[0_2px_8px_rgba(74,15,31,0.08)] transition-colors hover:bg-mocha-200 focus-visible:outline-2 focus-visible:outline-cherry">
+            <Link href={href} className="flex h-full flex-col gap-2 wc-card p-4  transition-colors hover:bg-mocha-200 focus-visible:outline-2 focus-visible:outline-cherry">
               <Icon size={20} aria-hidden /><span className="font-semibold">{title}</span><span className="text-[13px] text-mocha-700">{text}</span>
             </Link>
           </li>

@@ -30,7 +30,7 @@ export function Bell_() {
         <Bell size={15} aria-hidden />{unread > 0 && <span className="rounded-[4px] bg-cherry px-1 text-[11px] text-latte">{unread}</span>}
       </Button>
       {open && (
-        <div role="dialog" aria-label="Notification history" className="absolute right-0 top-11 z-40 flex max-h-96 w-80 max-w-[92vw] flex-col gap-2 overflow-y-auto rounded-[10px] border border-mocha-600 bg-latte p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)]">
+        <div role="dialog" aria-label="Notification history" className="absolute right-0 top-11 z-40 flex max-h-96 w-80 max-w-[92vw] flex-col gap-2 overflow-y-auto wc-card p-3 shadow-[0_8px_24px_rgba(74,15,31,0.18)]">
           <div className="flex items-center justify-between"><h2>Notifications</h2><Button size="sm" onClick={clear}>Clear</Button></div>
           {!history.length ? <p className="text-[13px] text-mocha-700">Nothing yet. Confirmations and failures appear here.</p> : history.map((t) => (
             <div key={t.id} className="border-t border-mocha-600 pt-2 text-[13px]"><p className="font-semibold">{t.kind === "error" ? "Failed: " : ""}{t.title}</p>{t.detail && <p>{t.detail}</p>}<p className="text-mocha-700">{format(t.at, "HH:mm:ss")}</p></div>

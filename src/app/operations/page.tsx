@@ -4,7 +4,6 @@ import { useState } from "react";
 import { act } from "@/lib/actions";
 import { computeAlerts, computeLedger, computeMetrics, riskRows } from "@/lib/derive";
 import { useApp } from "@/lib/data/store";
-import { CATEGORY_LABEL } from "@/lib/engine/labels";
 import { reservedByShelter } from "@/lib/engine/state";
 import { formatMinutes } from "@/lib/engine/time";
 import { Button, Empty, Metric, Section, Status, Table } from "@/components/ui";
@@ -71,12 +70,27 @@ export default function OperationsPage() {
               {note && <p className="text-[13px]">{note}</p>}
             </Section>
 
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               <Section title="Live rider map">
                 <MapView view={view} now={now} dispatcher />
               </Section>
-              <RescueIQ view={view} now={now} />
+              <Section title="Shelter demand and supply">
+                <Table head={["Shelter", "Status", "Demand", "Incoming", "Open"]}>
+                  {view.shelters.map((s) => {
+                    const inc = reserved.get(s.id) ?? 0;
+                    return (
+                      <tr key={s.id}>
+                        <td>{s.name}</td>
+                        <td><Status tone={s.status === "open" ? "calm" : "critical"}>{s.status === "open" ? "Open" : "Closed"}</Status></td>
+                        <td>{s.unmet_demand}</td><td>{inc}</td><td>{Math.max(0, s.unmet_demand - inc)}</td>
+                      </tr>
+                    );
+                  })}
+                </Table>
+              </Section>
             </div>
+
+            <RescueIQ view={view} now={now} />
 
             <Section title="Deadline-risk deliveries" aside={`${risk.length}`}>
               {!risk.length ? <Empty>No delivery is at risk.</Empty> : (
@@ -93,20 +107,6 @@ export default function OperationsPage() {
             </Section>
 
             <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
-              <Section title="Shelter demand and supply">
-                <Table head={["Shelter", "Status", "Unmet demand", "Incoming", "Still open"]}>
-                  {view.shelters.map((s) => {
-                    const inc = reserved.get(s.id) ?? 0;
-                    return (
-                      <tr key={s.id}>
-                        <td>{s.name}<div className="text-mocha-700">{s.accepted_categories.map((c) => CATEGORY_LABEL[c]).join(", ")}</div></td>
-                        <td><Status tone={s.status === "open" ? "calm" : "critical"}>{s.status === "open" ? "Open" : "Closed"}</Status></td>
-                        <td>{s.unmet_demand}</td><td>{inc}</td><td>{Math.max(0, s.unmet_demand - inc)}</td>
-                      </tr>
-                    );
-                  })}
-                </Table>
-              </Section>
               <Section title="Impact ledger" aside="From recorded events">
                 <Table head={["Measure", "Total"]}>
                   {ledger.map((r) => <tr key={r.label}><td>{r.label}{r.projection ? " (projection)" : ""}</td><td className="font-semibold">{r.value}</td></tr>)}
