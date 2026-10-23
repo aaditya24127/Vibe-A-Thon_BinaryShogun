@@ -11,3 +11,6 @@ public/sw.js.map
 public/swe-worker-*.js
 .opencode/
 .claude/
+
+.vercel
+.env*

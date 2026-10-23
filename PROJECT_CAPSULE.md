@@ -225,6 +225,10 @@ Offline results (separate): production build with the preview server stopped: `/
 
 Supabase project bkwcilwilcwqnjkpizkh: migrations 0001-0005 applied via the SQL editor. Via the REST API with the publishable key: tables seeded (6 donors, 5 shelters, 6 riders, 8 batches, 4 rules); direct insert denied (42501); `_seed_data` not callable; claim, duplicate action id, verified-incompatible block, delivery refused before transit, pickup, transit, delivery (30 received), shelter closure reroute (40 units split 30/10), reset all behaved as in the tests. Production build against the live project: top bar shows "Supabase connected", rider screen loaded live batches, a claim from the UI created a lease. Database was reset afterwards. Not yet done: Vercel deployment, two-browser realtime check, offline outbox replay against the live database, pg_cron status.
 
+## 15b. Deployed verification (2026-10-23)
+
+Vercel project weconnect (account aaditya24127-5445), production deployment from the CLI, public alias https://weconnect-jade.vercel.app (other aliases sit behind Vercel SSO protection). Env vars set in Vercel for production. Results on the deployed site: top bar "Supabase connected, Online. Synced."; service worker activated; a claim made from outside the browser appeared on Operations within 4 s without a reload (realtime); Chaos Lab "close shelter" rerouted 30 units to another shelter with the six-part result confirmed by the server; "make rider unresponsive" then "advance clock 5 min" released the uncollected lease and reassigned it to another rider (judge test 3, uncollected case); reset restored the seed. Judge tests 1, 2, 4, 6, 7, 9 on the deployed site, the custody-uncertain case, and the offline outbox replay on the deployed site are still unrun (covered only by the automated tests in section 15).
+
 ## 18. Next task
 
-Deploy to Vercel with the two environment variables, then run the browser flows (claim on one browser appearing on another, shelter closure rerouting, offline outbox replay) and record the deployed judge tests 1 to 9 and the offline checklist.
+Run the remaining deployed judge tests (1, 2, 4, 6, 7, 9, custody uncertain) and the offline outbox replay on https://weconnect-jade.vercel.app, then the 768 px and keyboard polish pass.
